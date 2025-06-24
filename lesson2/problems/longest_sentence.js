@@ -121,6 +121,11 @@ function getWordCount(sentence) {
 function longestSentence(text) {
 	const sentences = text.match(SENTENCE_REGEX);
 	
+	if (!sentences) {
+		console.log('No matches found.');
+		return;
+	}
+	
 	const wordCounts = sentences.map(getWordCount);
 	const maxCount = Math.max(...wordCounts);
 
@@ -134,6 +139,7 @@ function longestSentence(text) {
 }
 
 longestSentence(longText);
+longestSentence('abc');
 
 // console output
 // It is rather for us to be here dedicated to the great task remaining before us -- that from these honored dead we take increased devotion to that cause for which they gave the last full measure of devotion -- that we here highly resolve that these dead shall not have died in vain -- that this nation, under God, shall have a new birth of freedom -- and that government of the people, by the people, for the people, shall not perish from the earth.
