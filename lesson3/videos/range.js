@@ -88,15 +88,11 @@ Data Structures:
 		
 			Finding this variable is the hardest part. It could get infinitely tricky with larger 0's.
 
-		1 number? 10's place.
-		2 numbers? 100's place
-		3 numbers? 1000's 
-
 		'104 - 02'
 
 		['104 - 02', 03] If a range Character is in the first element, we have to split by that range char.
 		[
-			['104', '02'] =>  
+			['104', '02'] =>
 				]
 
 			Start Number is 104. => 105 => 106 and we keep going until we find a string version of the number
@@ -111,38 +107,114 @@ Data Structures:
 			['104', '02'] => 101 => 102 => 103 => 104 (newStart) => 104 => 105 ... =>  includes '02'
 		]
 
+First step is to find all the numbers. That's the hard part of this problem. Iterate up and 
+	replace the number with the string version if it includes that string version.
+
+	so like, 
+		1 3 7 2 4 1 => 1, 3, 7, 12, 14, 21 EASY.
+
+		['1', '3', '7', '12', '14', '21'] => only commas, so we add each one to the final array.
+			- map probably.
+		
+		in the case of a range, we add all those values from the first to the last.
+		in the case of a 3 range, we can ignore the first one and take the last one.
+
+		at that point, then we can split based on commas and whatnot. If it's just a number
+		if the string includes -:.. , then range do a new helper that calculates that range.
+			- if not, add the Number version.
+		The array is our return value.
 
 	Algo:
+
+	Remove ShortHand
 		1. First, split the string of numbers into an array based on its , delimiter.
 		2a. If no range delimiter, take the first number. This is the starting Number.
 		2b. If any range delimiter is inside the current number, split further by that delimiter.
 		3b. Take the first number from this split. This is the start number.
+		4. Iterate through the string. When we find a number that, when converted to a string, is included
+			in the current string, we replace the current number with its full version.
+		5. While iterating, use a for loop to iterate from the start number. This is how we tell
+			what to replace with. This is a replace thing.
+		6. When should the range end? Maybe take an end as well.
 
-		4. Go from the start Number and increment up. If there is a range delimiter, add the numbers 
-			to the final list array.
-		5. If no range delimiter, do not add the numbers.
-		6. Once we get to the end of the range, we want to stop adding numbers.
-			- how to stop? String(currentNumber) includes the end range string.
-
-
+	Main Function:
+		1. iterate through the strings. split by commas and map the array.
+		2. If the current value only includes digits, return the digit convered to a number.
+		3. If not, this is a range and we need to return an array of numbers.
+		4. HELPER determineRange: => takes a string 1:5, for example, returns array.
+			a. split by either : - or ..
+			b. take the first digit and convert to a number. This is the starting point.
+			c. Add every number from this number to the next number.
+			d. Then, if there's a final number, do the same thing.
+		5. After getting the array of numbers /arrays, flatten the array and return it.
 */
 
+const RANGE_DELIMITERS = /([:\-]|\.\.)/;
+
+function getFirstDigit(range) {
+	const nonDigit = /[^\d]/g;
+	
+	let numbers = range.split(', ');
+	let start = numbers[0];
+
+	if (start.match(nonDigit)) {
+		let arr = start.split(RANGE_DELIMITERS);
+		console.log(arr);
+		start = arr[0];
+	}
+
+	return start;
+}
+
+function firstOccurrence(strNum, range) {
+	let firstIdx = range.indexOf(strNum);
+	let secondIdx = 0;
+	let count = 0;
+
+	let arr = range.split(',');
+
+	// console.log(arr);
+
+	
+}
+
+function removeShortHand(start, range) {
+	return range.replace(/[\d]/g, digit => {
+
+		for (let count = Number(start); count < Infinity; count += 1) {
+			let strNum = String(count);
+			// firstOccurrence(strNum, range);
+
+			if (strNum.includes(digit)) {
+				start = strNum;
+				return strNum;
+			}
+		}
+	})
+}
+
+function shortHandRange(range) {
+	const start = getFirstDigit(range);
+	let longHand = removeShortHand(start, range);
+	console.log(longHand);
+}
+
 // No Ranges:
-console.log(shortHandRange('1, 3, 7, 2, 4, 1')); // [1, 3, 7, 12, 14, 21]
-console.log(shortHandRange('1, 1, 1')); // [1, 11, 21]
-console.log(shortHandRange('5, 6, 2, 8')); // [5, 6, 12, 18]
+// console.log(shortHandRange('1, 3, 7, 2, 4, 1')); // [1, 3, 7, 12, 14, 21]
+// console.log(shortHandRange('1, 1, 1')); // [1, 11, 21]
+// console.log(shortHandRange('5, 6, 2, 8')); // [5, 6, 12, 18]
 
-// Basic Ranges:
-console.log(shortHandRange("1-3, 1-2")); // [1, 2, 3, 11, 12]
-console.log(shortHandRange("104-2")); // // [104, 105...112]
-console.log(shortHandRange('5-7')); // [5, 6, 7]
-console.log(shortHandRange('5-7, 5-7, 5-7')); // [5, 6, 7, 15, 16, 17, 25, 26, 27]
+// // Basic Ranges:
+// console.log(shortHandRange("1-3, 1-2")); // [1, 2, 3, 11, 12]
+// console.log(shortHandRange("104-2")); // // [104, 105...112]
+// console.log(shortHandRange('5-7')); // [5, 6, 7]
+// console.log(shortHandRange('5-7, 5-7, 5-7')); // [5, 6, 7, 15, 16, 17, 25, 26, 27]
 
-// Multiple Ranges:
-	// 1 - 5 - 2
-console.log(shortHandRange("1:5:2")); // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-console.log(shortHandRange('7..8..2..3')); // [7, 8, 9, 10, 11, 12, 13]
+// // Multiple Ranges:
+// 	// 1 - 5 - 2
+// console.log(shortHandRange("1:5:2")); // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+// console.log(shortHandRange('7..8..2..3')); // [7, 8, 9, 10, 11, 12, 13]
 
-// Hundreds Difference:
+// // Hundreds Difference:
 console.log(shortHandRange("104-02")); // [104, 105... 202] '202' includse '02'
-console.log(shortHandRange('545, 64:11')); // [545, 564, 565... 611]
+// console.log(shortHandRange('545, 64:11')); // [545, 564, 565... 611]
